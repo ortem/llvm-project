@@ -84,6 +84,8 @@ public:
   bool DeclContextIsStructUnionOrClass(void *opaque_decl_ctx) override;
   ConstString DeclContextGetName(void *opaque_decl_ctx) override;
   ConstString DeclContextGetScopeQualifiedName(void *opaque_decl_ctx) override;
+  bool DeclContextIsContainedInLookup(void *opaque_decl_ctx,
+                                      void *other_opaque_decl_ctx);
   bool DeclContextIsClassMethod(void *opaque_decl_ctx, lldb::LanguageType *language_ptr,
                                 bool *is_instance_method_ptr,
                                 ConstString *language_object_name_ptr) override;
@@ -195,6 +197,8 @@ public:
   bool IsVoidType(lldb::opaque_compiler_type_t type) override;
 
   bool IsBooleanType(lldb::opaque_compiler_type_t type);
+
+  bool CanPassInRegisters(const CompilerType &type);
 
   bool SupportsLanguage(lldb::LanguageType language) override;
 
@@ -344,6 +348,12 @@ public:
   //----------------------------------------------------------------------
   // Dumping types
   //----------------------------------------------------------------------
+
+#ifndef NDEBUG
+  /// Convenience LLVM-style dump method for use in the debugger only.
+  LLVM_DUMP_METHOD void dump(lldb::opaque_compiler_type_t type) const override;
+#endif
+
   void DumpValue(lldb::opaque_compiler_type_t type, ExecutionContext *exe_ctx,
                  Stream *s, lldb::Format format, const DataExtractor &data,
                  lldb::offset_t data_offset, size_t data_byte_size,

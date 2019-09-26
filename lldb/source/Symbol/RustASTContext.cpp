@@ -1188,6 +1188,11 @@ bool RustASTContext::IsVoidType(lldb::opaque_compiler_type_t type) {
     strcmp(tuple->Name().AsCString(), "()") == 0 && tuple->FieldCount() == 0;
 }
 
+bool RustASTContext::CanPassInRegisters(const CompilerType &type) {
+  // TODO
+  return false;
+}
+
 bool RustASTContext::SupportsLanguage(lldb::LanguageType language) {
   return language == eLanguageTypeRust;
 }
@@ -1616,6 +1621,13 @@ RustASTContext::ConvertStringToFloatValue(lldb::opaque_compiler_type_t type,
 // Dumping types
 //----------------------------------------------------------------------
 #define DEPTH_INCREMENT 2
+
+#ifndef NDEBUG
+LLVM_DUMP_METHOD void
+RustASTContext::dump(lldb::opaque_compiler_type_t type) const {
+  assert(false && "Not implemented");
+}
+#endif
 
 void RustASTContext::DumpValue(lldb::opaque_compiler_type_t type,
                                ExecutionContext *exe_ctx, Stream *s,
@@ -2083,6 +2095,11 @@ ConstString RustASTContext::DeclContextGetName(void *opaque_decl_ctx) {
 ConstString RustASTContext::DeclContextGetScopeQualifiedName(void *opaque_decl_ctx) {
   RustDeclContext *dc = (RustDeclContext *) opaque_decl_ctx;
   return dc->QualifiedName();
+}
+
+bool RustASTContext::DeclContextIsContainedInLookup(
+    void *opaque_decl_ctx, void *other_opaque_decl_ctx) {
+  return opaque_decl_ctx == other_opaque_decl_ctx;
 }
 
 bool RustASTContext::DeclContextIsStructUnionOrClass(void *opaque_decl_ctx) {
